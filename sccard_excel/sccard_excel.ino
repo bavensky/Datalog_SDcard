@@ -26,7 +26,7 @@
    *  SCK             D13             10 - 9                                     *
    *  MISO            D12                -                                       *
    *******************************************************************************/
-  File myFile;
+  File excel;
   const int chipSelect = 4;
   /*******************************************************************************
    * กำหนดใช้งานคีย์แพตในโมดูล DFRobot                                              *
@@ -39,16 +39,43 @@
   #define btnLEFT   3
   #define btnSELECT 4
   #define btnNONE   5
+  /*******  Variable   ***********************************************************/
+  int i=0;
   /*******************************************************************************/
   void setup()
   {
     Serial.begin(9600);
     lcd.begin(16,2);
-  
+    pinMode(3, OUTPUT);
+    if (!SD.begin(chipSelect)){return;}
+    lcd.setCursor(0,0);
+    lcd.print("RMUTL Electronic");
+    delay(2000);
   }
   
   void loop()
   {
-    Serial.print("Hello world !");
+    lcd.setCursor(0,1);
+    lcd.print("     Wait !     ");
+    lcd_key = read_LCD_buttons();   
+    if( lcd_key==btnSELECT)
+    {
+      delay(200);
+      excel = SD.open("Datalog.csv", FILE_WRITE);
+      if(excel) 
+      {
+        lcd.setCursor(0,1);
+        lcd.print("Writing Datalog ");
+        Serial.println("Writing Data log");
+        i++;
+        excel.print(i);
+        excel.print(",");
+        excel.print("Datalog");
+        excel.print(",");
+        excel.println("Key Shield");
+        excel.close();
+        delay(2000);
+      }
+    }
   }
 
